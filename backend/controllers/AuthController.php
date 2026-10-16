@@ -55,4 +55,27 @@ class AuthController {
         exit;
     }
 }
+// --- CODIGO DE ACTIVACION (Añadir al final del archivo) ---
+
+// Iniciamos la sesion para poder usar $_SESSION['flash']
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Requerimos tu archivo de conexión para pasárselo a tus métodos
+require_once __DIR__ . '/../config/database.php';
+$pdo = Database::conectar();
+
+// Leemos la acción de la URL (?action=login o ?action=register)
+$action = $_GET['action'] ?? '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if ($action === 'register') {
+        AuthController::registro($pdo);
+    } elseif ($action === 'login') {
+        AuthController::login($pdo);
+    }
+} elseif ($action === 'logout') {
+    AuthController::salir();
+}
 
