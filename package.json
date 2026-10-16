@@ -1,0 +1,19 @@
+
+{
+  "name": "tiendaonline",
+  "version": "1.0.0",
+  "description": "Vision del proyecto - Tienda Online",
+  "main": "index.js",
+  "scripts": {
+    "start": "start http://localhost/proyecto/tiendaOnline/frontend/",
+    "backend": "start http://localhost/proyecto/tiendaOnline/backend/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/betzabe12/tiendaOnline-.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+}
