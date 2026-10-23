@@ -1,0 +1,24 @@
+# Entornos y dependencias
+node_modules/
+vendor/
+
+# Archivos de base de datos SQLite y temporales locales
+*.sqlite
+*.sqlite3
+*.db
+*.log
+
+# Archivos de entorno y credenciales
+.env
+.env.local
+.env.*.local
+
+# Archivos del sistema operativo y editores
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+
+# Copias de seguridad locales
+backup/

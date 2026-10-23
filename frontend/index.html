@@ -3,59 +3,490 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Subsistema de Seguridad - Login & Registro</title>
-    <style>
-        body { font-family: Arial, sans-serif; background-color: #f4f4f9; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .container { background: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 350px; }
-        h2 { text-align: center; color: #333; margin-bottom: 20px; }
-        input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-        button { width: 100%; padding: 10px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
-        button:hover { background-color: #218838; }
-        .toggle-link { text-align: center; margin-top: 15px; font-size: 14px; color: #007bff; cursor: pointer; text-decoration: underline; }
-    </style>
+    <title>FashionCloud — Tienda de Ropa Online | Colección Contemporánea</title>
+    
+    <!-- Meta etiquetas SEO y semántica -->
+    <meta name="description" content="FashionCloud es tu tienda virtual de moda contemporánea. Consulta precios, tallas, colores y disponibilidad en tiempo real.">
+    <meta name="keywords" content="moda, ropa online, boutique, fashioncloud, prendas superiores, pantalones, vestidos">
+    
+    <!-- Tipografías de Google Fonts: Outfit y Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Hojas de estilos -->
+    <link rel="stylesheet" href="css/landing.css">
 </head>
 <body>
 
-<div class="container">
-    <!-- FORMULARIO DE LOGIN -->
-    <div id="login-section">
-        <h2>Iniciar Sesión</h2>
-        <!-- Envía los datos directamente al backend invocando el método de login -->
-        <form action="../backend/controllers/AuthController.php?action=login" method="POST">
-            <input type="email" name="correo" placeholder="Correo Electrónico" required>
-            <input type="password" name="password" placeholder="Contraseña" required>
-            <button type="submit">Ingresar</button>
-        </form>
-        <div class="toggle-link" onclick="toggleForm()">¿No tienes cuenta? Regístrate aquí</div>
+    <!-- =====================================================================
+         1. BARRA DE NAVEGACIÓN PRINCIPAL (HEADER)
+         ===================================================================== -->
+    <header class="site-header">
+        <div class="container header-container">
+            <!-- Logotipo de Marca FashionCloud -->
+            <a href="#hero" class="brand-logo" aria-label="FashionCloud Inicio">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/>
+                    <path d="M12 12v3"/>
+                    <path d="m9 15 3-3 3 3"/>
+                </svg>
+                <span>FashionCloud<span class="brand-dot">.</span></span>
+            </a>
+
+            <!-- Enlaces de navegación desktop -->
+            <nav>
+                <ul class="nav-links" id="navLinks">
+                    <li><a href="#hero" class="nav-link active">Inicio</a></li>
+                    <li><a href="#coleccion" class="nav-link">Colección</a></li>
+                    <li><a href="#categorias" class="nav-link">Categorías</a></li>
+                    <li><a href="#beneficios" class="nav-link">Beneficios</a></li>
+                    <li><a href="#nosotros" class="nav-link">Nosotros</a></li>
+                    <li><a href="#contacto" class="nav-link">Contacto</a></li>
+                </ul>
+            </nav>
+
+            <!-- Acciones de Usuario: Autenticación -->
+            <div class="header-actions">
+                <button type="button" class="btn btn-outline btn-sm" onclick="abrirModalAuth('login')">
+                    Iniciar Sesión
+                </button>
+                <button type="button" class="btn btn-primary btn-sm" onclick="abrirModalAuth('register')">
+                    Registrarse
+                </button>
+
+                <!-- Botón de Menú Hamburguesa para Móviles -->
+                <button type="button" class="mobile-toggle" id="mobileMenuBtn" aria-label="Abrir menú de navegación">
+                    ☰
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- =====================================================================
+             2. PORTADA PRINCIPAL (HERO SECTION)
+             ===================================================================== -->
+        <section class="hero-section" id="hero">
+            <div class="container">
+                <div class="hero-grid">
+                    <div class="hero-content">
+                        <div class="hero-badge">
+                            <span class="hero-badge-dot"></span>
+                            Nueva Temporada 2026 • Catálogo Activo
+                        </div>
+                        <h1 class="hero-title">
+                            Moda contemporánea que define tu <span class="highlight">estilo</span> y presencia.
+                        </h1>
+                        <p class="hero-description">
+                            Explora nuestra selección exclusiva de prendas. Consulta disponibilidad de tallas, colores y existencias en tiempo real y realiza tus pedidos de forma directa y transparente.
+                        </p>
+                        <div class="hero-buttons">
+                            <a href="#coleccion" class="btn btn-accent">
+                                Explorar Colección
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
+                            </a>
+                            <button type="button" class="btn btn-outline" onclick="abrirModalAuth('login')">
+                                Acceder a mi Cuenta
+                            </button>
+                        </div>
+                        <div class="hero-meta">
+                            <div class="meta-item">
+                                <span class="meta-number">100%</span>
+                                <span class="meta-label">Disponibilidad en línea</span>
+                            </div>
+                            <div class="meta-item">
+                                <span class="meta-number">24/7</span>
+                                <span class="meta-label">Consulta de catálogo</span>
+                            </div>
+                            <div class="meta-item">
+                                <span class="meta-number">Directo</span>
+                                <span class="meta-label">Gestión de pedidos</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hero-visual">
+                        <div class="hero-image-wrapper">
+                            <img src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=800&q=80" 
+                                 alt="Modelo vistiendo moda contemporánea FashionCloud" 
+                                 loading="eager">
+                        </div>
+                        <div class="hero-floating-card">
+                            <div class="floating-icon">✦</div>
+                            <div class="floating-text">
+                                <h4>Inventario Verificado</h4>
+                                <p>Control de stock en tiempo real según catálogo del sistema.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =====================================================================
+             3. SECCIÓN DE CATEGORÍAS
+             ===================================================================== -->
+        <section class="categories-section" id="categorias">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-tag">Colecciones</span>
+                    <h2 class="section-title">Nuestras Categorías</h2>
+                    <p class="section-subtitle">
+                        Prendas diseñadas para adaptarse a tu ritmo diario, combinando comodidad, estética y confección de calidad.
+                    </p>
+                </div>
+
+                <div class="categories-grid">
+                    <!-- Categoría 1: Superiores -->
+                    <div class="category-card" onclick="filtrarPorCategoria('superiores')">
+                        <img src="https://images.unsplash.com/photo-1598554747436-c9293d6a588f?auto=format&fit=crop&w=600&q=80" alt="Prendas Superiores">
+                        <div class="category-overlay">
+                            <h3>Prendas Superiores</h3>
+                            <span>Ver blusas y camisas →</span>
+                        </div>
+                    </div>
+
+                    <!-- Categoría 2: Pantalones -->
+                    <div class="category-card" onclick="filtrarPorCategoria('pantalones')">
+                        <img src="https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?auto=format&fit=crop&w=600&q=80" alt="Pantalones y Jeans">
+                        <div class="category-overlay">
+                            <h3>Pantalones & Jeans</h3>
+                            <span>Ver cortes y estilos →</span>
+                        </div>
+                    </div>
+
+                    <!-- Categoría 3: Vestidos -->
+                    <div class="category-card" onclick="filtrarPorCategoria('vestidos')">
+                        <img src="https://images.unsplash.com/photo-1595777457583-95e059d581b8?auto=format&fit=crop&w=600&q=80" alt="Vestidos y Faldas">
+                        <div class="category-overlay">
+                            <h3>Vestidos & Faldas</h3>
+                            <span>Ver prendas fluidas →</span>
+                        </div>
+                    </div>
+
+                    <!-- Categoría 4: Abrigos -->
+                    <div class="category-card" onclick="filtrarPorCategoria('abrigos')">
+                        <img src="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&w=600&q=80" alt="Abrigos y Chaquetas">
+                        <div class="category-overlay">
+                            <h3>Abrigos & Blazers</h3>
+                            <span>Ver sastrería exterior →</span>
+                        </div>
+                    </div>
+
+                    <!-- Categoría 5: Accesorios -->
+                    <div class="category-card" onclick="filtrarPorCategoria('accesorios')">
+                        <img src="https://images.unsplash.com/photo-1624222247344-550fb60583dc?auto=format&fit=crop&w=600&q=80" alt="Accesorios de Moda">
+                        <div class="category-overlay">
+                            <h3>Accesorios</h3>
+                            <span>Ver complementos →</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =====================================================================
+             4. PRODUCTOS DESTACADOS (CATÁLOGO REALISTA)
+             ===================================================================== -->
+        <section class="collection-section" id="coleccion">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-tag">Catálogo de Productos</span>
+                    <h2 class="section-title">Colección Destacada</h2>
+                    <p class="section-subtitle">
+                        Consulta prendas, tallas, colores y precios. Cada prenda responde a la estructura de datos de FashionCloud.
+                    </p>
+                </div>
+
+                <!-- Notificación de catálogo representativo -->
+                <div class="catalog-notice">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    <span><strong>Catálogo Activo:</strong> Las prendas mostradas a continuación representan el esquema real de la base de datos (código, nombre, precio, stock, talla y color).</span>
+                </div>
+
+                <!-- Botones de filtrado -->
+                <div class="collection-filters">
+                    <button type="button" class="filter-btn active" data-filter="todos">Todas las prendas</button>
+                    <button type="button" class="filter-btn" data-filter="superiores">Prendas Superiores</button>
+                    <button type="button" class="filter-btn" data-filter="pantalones">Pantalones & Jeans</button>
+                    <button type="button" class="filter-btn" data-filter="vestidos">Vestidos & Faldas</button>
+                    <button type="button" class="filter-btn" data-filter="abrigos">Abrigos</button>
+                    <button type="button" class="filter-btn" data-filter="accesorios">Accesorios</button>
+                </div>
+
+                <!-- Grid dinámico de tarjetas de productos -->
+                <div class="products-grid" id="productsGrid">
+                    <!-- Se renderiza dinámicamente mediante landing.js -->
+                </div>
+            </div>
+        </section>
+
+        <!-- =====================================================================
+             5. BENEFICIOS REALES DE COMPRA
+             ===================================================================== -->
+        <section class="benefits-section" id="beneficios">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-tag">Por qué FashionCloud</span>
+                    <h2 class="section-title">Beneficios y Características Reales</h2>
+                    <p class="section-subtitle">
+                        Diseñado para una experiencia de consulta clara y un control ordenado del proceso de compra.
+                    </p>
+                </div>
+
+                <div class="benefits-grid">
+                    <div class="benefit-card">
+                        <div class="benefit-icon">🕒</div>
+                        <h3>Catálogo en Línea 24/7</h3>
+                        <p>Explora libremente todas las prendas, características y disponibilidad desde cualquier dispositivo a cualquier hora.</p>
+                    </div>
+
+                    <div class="benefit-card">
+                        <div class="benefit-icon">📊</div>
+                        <h3>Información Transparente</h3>
+                        <p>Detalle claro de tallas disponibles, colores exactos y unidades en stock registradas en el inventario.</p>
+                    </div>
+
+                    <div class="benefit-card">
+                        <div class="benefit-icon">📝</div>
+                        <h3>Gestión Directa de Pedidos</h3>
+                        <p>Tus compras quedan formalmente registradas en el sistema para evitar confusiones y errores manuales de registro.</p>
+                    </div>
+
+                    <div class="benefit-card">
+                        <div class="benefit-icon">💵</div>
+                        <h3>Métodos de Pago Acordados</h3>
+                        <p>Modalidades seguras y verificables mediante transferencia bancaria o pago contra entrega en efectivo.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =====================================================================
+             6. PRESENTACIÓN DE FASHIONCLOUD (NOSOTROS)
+             ===================================================================== -->
+        <section class="about-section" id="nosotros">
+            <div class="container">
+                <div class="about-grid">
+                    <div class="about-text">
+                        <span class="section-tag">Sobre Nosotros</span>
+                        <h2>Un sistema pensado para modernizar la compra de ropa</h2>
+                        <p>
+                            <strong>FashionCloud</strong> es una plataforma de comercio electrónico desarrollada con el propósito de optimizar la gestión de una tienda de ropa en línea. Nace de la necesidad de superar los límites de las ventas informales y manuales.
+                        </p>
+                        <p>
+                            Nuestro sistema conecta a los clientes con un catálogo visual, confiable y actualizado, al tiempo que brinda a los administradores herramientas eficaces para controlar productos, categorías, inventarios y pedidos.
+                        </p>
+                        <ul class="about-features">
+                            <li>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                                <span>Consulta rápida de precios, tallas y stock en tiempo real.</span>
+                            </li>
+                            <li>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                                <span>Módulo de seguridad para inicio de sesión y registro de usuarios.</span>
+                            </li>
+                            <li>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                                <span>Estructura preparada para integración con base de datos relacional.</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="about-image">
+                        <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=800&q=80" 
+                             alt="Boutique de ropa organizada FashionCloud" 
+                             loading="lazy">
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- =====================================================================
+         7. PIE DE PÁGINA (FOOTER) Y CONTACTO
+         ===================================================================== -->
+    <footer class="site-footer" id="contacto">
+        <div class="container">
+            <div class="footer-grid">
+                <!-- Columna de Marca -->
+                <div class="footer-brand">
+                    <div class="brand-logo">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/>
+                            <path d="M12 12v3"/>
+                            <path d="m9 15 3-3 3 3"/>
+                        </svg>
+                        <span>FashionCloud<span class="brand-dot">.</span></span>
+                    </div>
+                    <p class="footer-desc">
+                        Plataforma de comercio electrónico para ropa de moda contemporánea. Calidad, estilo y organización en cada pedido.
+                    </p>
+                </div>
+
+                <!-- Columna de Enlaces Rápidos -->
+                <div class="footer-col">
+                    <h4>Navegación</h4>
+                    <ul class="footer-links">
+                        <li><a href="#hero">Inicio</a></li>
+                        <li><a href="#coleccion">Colección</a></li>
+                        <li><a href="#categorias">Categorías</a></li>
+                        <li><a href="#beneficios">Beneficios</a></li>
+                        <li><a href="#nosotros">Nosotros</a></li>
+                    </ul>
+                </div>
+
+                <!-- Columna de Cuenta y Sistema -->
+                <div class="footer-col">
+                    <h4>Mi Cuenta</h4>
+                    <ul class="footer-links">
+                        <li><a href="javascript:void(0)" onclick="abrirModalAuth('login')">Iniciar Sesión</a></li>
+                        <li><a href="javascript:void(0)" onclick="abrirModalAuth('register')">Registrarse</a></li>
+                        <li><a href="auth.html">Página de Acceso Directo</a></li>
+                        <li><a href="../backend/index.php">Panel de Sistema</a></li>
+                    </ul>
+                </div>
+
+                <!-- Columna de Contacto e Información Académica -->
+                <div class="footer-col">
+                    <h4>Atención y Contacto</h4>
+                    <div class="footer-contact-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                        <span>contacto@fashioncloud.tienda</span>
+                    </div>
+                    <div class="footer-contact-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        <span>Lunes a Sábado: 09:00 - 19:00</span>
+                    </div>
+                    <div class="footer-contact-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 0 0-7.07 17.07A10 10 0 1 0 12 2Z"/></svg>
+                        <span>Proyecto Universitario — 5to Semestre</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2026 FashionCloud — Tienda de Ropa Online. Todos los derechos reservados.</p>
+                <p>Desarrollado con arquitectura PHP + HTML5 + CSS3 + JS</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- =====================================================================
+         8. MODAL INTERACTIVO: CONSULTA DE PRENDA
+         ===================================================================== -->
+    <div class="modal-backdrop" id="productModal" role="dialog" aria-modal="true" aria-labelledby="modalProductTitle">
+        <div class="modal-box">
+            <button type="button" class="modal-close-btn" onclick="cerrarModalProducto()" aria-label="Cerrar ventana">✕</button>
+            <div class="product-modal-grid">
+                <div class="product-modal-image">
+                    <img id="modalProductImg" src="" alt="Prenda de vestir">
+                </div>
+                <div class="product-modal-body">
+                    <span class="modal-product-code" id="modalProductCode">CÓDIGO: FC-000</span>
+                    <h3 class="modal-product-title" id="modalProductTitle">Nombre de Prenda</h3>
+                    <div class="modal-product-price" id="modalProductPrice">Bs. 0.00</div>
+                    <p class="modal-product-desc" id="modalProductDesc">Descripción detallada de la prenda.</p>
+                    
+                    <div class="modal-specs-list">
+                        <div>
+                            <span>Categoría:</span>
+                            <strong id="modalProductCategory">-</strong>
+                        </div>
+                        <div>
+                            <span>Tallas disponibles:</span>
+                            <strong id="modalProductSizes">-</strong>
+                        </div>
+                        <div>
+                            <span>Color:</span>
+                            <strong id="modalProductColor">-</strong>
+                        </div>
+                        <div>
+                            <span>Disponibilidad:</span>
+                            <strong class="stock-tag-ok" id="modalProductStock">En inventario</strong>
+                        </div>
+                    </div>
+
+                    <div class="order-info-notice">
+                        ℹ️ <strong>Modalidad de Pedido:</strong> Para solicitar esta prenda, inicia sesión en el sistema y coordina tu pedido mediante pago en efectivo o transferencia.
+                    </div>
+
+                    <div style="display: flex; gap: 0.75rem;">
+                        <button type="button" class="btn btn-primary btn-full" onclick="cerrarModalProducto(); abrirModalAuth('login');">
+                            Iniciar Sesión para Solicitar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- FORMULARIO DE REGISTRO -->
-    <div id="registration-section" style="display: none;">
-        <h2>Registro de Usuario</h2>
-        <!-- Envía los datos directamente al backend invocando el método de registro -->
-        <form action="../backend/controllers/AuthController.php?action=register" method="POST">
-            <input type="text" name="nombre" placeholder="Nombre Completo" required>
-            <input type="email" name="correo" placeholder="Correo Electrónico" required>
-            <input type="password" name="password" placeholder="Contraseña (Mín. 8 caracteres)" minlength="8" required>
-            <button type="submit" style="background-color: #007bff;">Registrarse</button>
-        </form>
-        <div class="toggle-link" onclick="toggleForm()">¿Ya tienes cuenta? Inicia sesión</div>
+    <!-- =====================================================================
+         9. MODAL INTERACTIVO: AUTENTICACIÓN (LOGIN Y REGISTRO)
+         Compatible 100% con AuthController.php
+         ===================================================================== -->
+    <div class="modal-backdrop" id="authModal" role="dialog" aria-modal="true" aria-labelledby="authModalHeading">
+        <div class="modal-box auth-modal-box">
+            <button type="button" class="modal-close-btn" onclick="cerrarModalAuth()" aria-label="Cerrar">✕</button>
+            
+            <div class="auth-modal-header">
+                <h3 id="authModalHeading">Acceso FashionCloud</h3>
+                <p>Gestiona tus compras y consultas en la plataforma</p>
+            </div>
+
+            <!-- Selector de pestañas: Iniciar Sesión / Registrarse -->
+            <div class="auth-tabs">
+                <button type="button" class="auth-tab-btn active" id="tabLoginBtn" onclick="cambiarPestanaAuth('login')">
+                    Iniciar Sesión
+                </button>
+                <button type="button" class="auth-tab-btn" id="tabRegisterBtn" onclick="cambiarPestanaAuth('register')">
+                    Registrarse
+                </button>
+            </div>
+
+            <!-- FORMULARIO 1: INICIAR SESIÓN -->
+            <form id="modalLoginForm" action="../backend/controllers/AuthController.php?action=login" method="POST">
+                <div class="auth-form-group">
+                    <label for="modalLoginCorreo">Correo Electrónico</label>
+                    <input type="email" id="modalLoginCorreo" name="correo" placeholder="ejemplo@correo.com" required>
+                </div>
+                <div class="auth-form-group">
+                    <label for="modalLoginPassword">Contraseña</label>
+                    <input type="password" id="modalLoginPassword" name="password" placeholder="Tu contraseña" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-full">
+                    Ingresar al Sistema
+                </button>
+            </form>
+
+            <!-- FORMULARIO 2: REGISTRO DE USUARIO -->
+            <form id="modalRegisterForm" action="../backend/controllers/AuthController.php?action=register" method="POST" style="display: none;">
+                <div class="auth-form-group">
+                    <label for="modalRegNombre">Nombre Completo</label>
+                    <input type="text" id="modalRegNombre" name="nombre" placeholder="Nombre y Apellido" required>
+                </div>
+                <div class="auth-form-group">
+                    <label for="modalRegCorreo">Correo Electrónico</label>
+                    <input type="email" id="modalRegCorreo" name="correo" placeholder="ejemplo@correo.com" required>
+                </div>
+                <div class="auth-form-group">
+                    <label for="modalRegPassword">Contraseña (Mínimo 8 caracteres)</label>
+                    <input type="password" id="modalRegPassword" name="password" minlength="8" placeholder="Contraseña segura" required>
+                </div>
+                <button type="submit" class="btn btn-accent btn-full">
+                    Crear mi Cuenta
+                </button>
+            </form>
+
+            <!-- Enlace directo a la vista tradicional auth.html -->
+            <div class="auth-standalone-link">
+                ¿Prefieres la vista tradicional? <a href="auth.html">Abrir pantalla completa</a>
+            </div>
+        </div>
     </div>
-</div>
 
-<script>
-    function toggleForm() {
-        const loginSec = document.getElementById('login-section');
-        const regSec = document.getElementById('registration-section');
-        if (loginSec.style.display === 'none') {
-            loginSec.style.display = 'block';
-            regSec.style.display = 'none';
-        } else {
-            loginSec.style.display = 'none';
-            regSec.style.display = 'block';
-        }
-    }
-</script>
-
+    <!-- Scripts de la Landing Page -->
+    <script src="js/landing.js"></script>
 </body>
 </html>

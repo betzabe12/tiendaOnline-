@@ -8,18 +8,18 @@ class AuthController {
         $password = $_POST['password'] ?? '';
 
         if ($nombre === '' || !filter_var($correo, FILTER_VALIDATE_EMAIL) || strlen($password) < 8) {
-            $_SESSION['flash'] = 'Completa los datos y utiliza una contraseña de al menos 8 caracteres.';
-            header('Location: ../views/registro.php');
+            $_SESSION['flash'] = 'Por favor completa todos los datos y utiliza una contraseña de al menos 8 caracteres.';
+            header('Location: ../index.php');
             exit;
         }
         if (Usuario::buscarPorCorreo($pdo, $correo)) {
-            $_SESSION['flash'] = 'Ese correo ya está registrado.';
-            header('Location: ../views/registro.php');
+            $_SESSION['flash'] = 'El correo electrónico ya se encuentra registrado.';
+            header('Location: ../index.php');
             exit;
         }
         Usuario::crear($pdo, $nombre, $correo, password_hash($password, PASSWORD_DEFAULT));
-        $_SESSION['flash'] = 'Registro exitoso. Ya puedes iniciar sesión.';
-        header('Location: ../views/login.php');
+        $_SESSION['flash'] = 'Registro exitoso. Ya puedes iniciar sesión con tu cuenta.';
+        header('Location: ../index.php');
         exit;
     }
 
@@ -29,16 +29,16 @@ class AuthController {
         $usuario = Usuario::buscarPorCorreo($pdo, $correo);
 
         if (!$usuario || !password_verify($password, $usuario['password'])) {
-            $_SESSION['flash'] = 'Correo o contraseña incorrectos.';
-            header('Location: ../views/login.php');
+            $_SESSION['flash'] = 'Correo electrónico o contraseña incorrectos.';
+            header('Location: ../index.php');
             exit;
         }
         session_regenerate_id(true);
         $_SESSION['usuario'] = [
-            'id' => (int)$usuario['id'],
+            'id'     => (int)$usuario['id'],
             'nombre' => $usuario['nombre'],
             'correo' => $usuario['correo'],
-            'rol' => $usuario['rol']
+            'rol'    => $usuario['rol'] ?? 'cliente'
         ];
         header('Location: ../index.php');
         exit;
@@ -55,18 +55,18 @@ class AuthController {
         exit;
     }
 }
-// --- CODIGO DE ACTIVACION (Añadir al final del archivo) ---
 
-// Iniciamos la sesion para poder usar $_SESSION['flash']
+// --- CÓDIGO DE ACTIVACIÓN DEL CONTROLADOR ---
+
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Requerimos tu archivo de conexión para pasárselo a tus métodos
+// Requerimos la configuración de base de datos MySQL mediante la clase Database
 require_once __DIR__ . '/../config/database.php';
 $pdo = Database::conectar();
 
-// Leemos la acción de la URL (?action=login o ?action=register)
+// Leemos la acción solicitada por URL (?action=login, register o logout)
 $action = $_GET['action'] ?? '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -78,4 +78,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 } elseif ($action === 'logout') {
     AuthController::salir();
 }
-

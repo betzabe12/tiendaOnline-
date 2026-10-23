@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FashionCloud - Iniciar Sesión y Registro</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f9; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .container { background: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 350px; }
+        h2 { text-align: center; color: #333; margin-bottom: 20px; }
+        input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        button { width: 100%; padding: 10px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
+        button:hover { background-color: #218838; }
+        .toggle-link { text-align: center; margin-top: 15px; font-size: 14px; color: #007bff; cursor: pointer; text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- FORMULARIO DE LOGIN -->
+    <div id="login-section">
+        <h2>Iniciar Sesión</h2>
+        <!-- Envía los datos directamente al backend invocando el método de login -->
+        <form action="../backend/controllers/AuthController.php?action=login" method="POST">
+            <input type="email" name="correo" placeholder="Correo Electrónico" required>
+            <input type="password" name="password" placeholder="Contraseña" required>
+            <button type="submit">Ingresar</button>
+        </form>
+        <div class="toggle-link" onclick="toggleForm()">¿No tienes cuenta? Regístrate aquí</div>
+    </div>
+
+    <!-- FORMULARIO DE REGISTRO -->
+    <div id="registration-section" style="display: none;">
+        <h2>Registro de Usuario</h2>
+        <!-- Envía los datos directamente al backend invocando el método de registro -->
+        <form action="../backend/controllers/AuthController.php?action=register" method="POST">
+            <input type="text" name="nombre" placeholder="Nombre Completo" required>
+            <input type="email" name="correo" placeholder="Correo Electrónico" required>
+            <input type="password" name="password" placeholder="Contraseña (Mín. 8 caracteres)" minlength="8" required>
+            <button type="submit" style="background-color: #007bff;">Registrarse</button>
+        </form>
+        <div class="toggle-link" onclick="toggleForm()">¿Ya tienes cuenta? Inicia sesión</div>
+    </div>
+
+    <!-- ENLACE DE RETORNO A LA TIENDA -->
+    <div style="text-align: center; margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px;">
+        <a href="index.html" style="color: #666; text-decoration: none; font-size: 13px;">← Volver a FashionCloud (Inicio)</a>
+    </div>
+</div>
+
+<script>
+    function toggleForm() {
+        const loginSec = document.getElementById('login-section');
+        const regSec = document.getElementById('registration-section');
+        if (loginSec.style.display === 'none') {
+            loginSec.style.display = 'block';
+            regSec.style.display = 'none';
+        } else {
+            loginSec.style.display = 'none';
+            regSec.style.display = 'block';
+        }
+    }
+</script>
+
+</body>
+</html>
