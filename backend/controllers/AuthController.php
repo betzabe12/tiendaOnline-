@@ -57,7 +57,7 @@ class AuthController
             $_SESSION['flash'] =
                 'Por favor completa todos los datos y utiliza una contraseña de al menos 8 caracteres.';
 
-            header('Location: ../../frontend/index.php');
+            header('Location: /');
             exit;
         }
 
@@ -68,7 +68,7 @@ class AuthController
             $_SESSION['flash'] =
                 'El correo electrónico ya se encuentra registrado.';
 
-            header('Location: ../../frontend/index.php');
+            header('Location: /');
             exit;
         }
 
@@ -89,7 +89,7 @@ class AuthController
         $_SESSION['flash'] =
             'Registro exitoso. Ya puedes iniciar sesión con tu cuenta.';
 
-        header('Location: ../../frontend/index.php');
+        header('Location: /');
         exit;
     }
 
@@ -112,7 +112,7 @@ class AuthController
             $_SESSION['flash'] =
                 'Debes ingresar un correo electrónico y una contraseña válidos.';
 
-            header('Location: ../../frontend/index.php');
+            header('Location: /');
             exit;
         }
 
@@ -127,7 +127,7 @@ class AuthController
             $_SESSION['flash'] =
                 'Correo electrónico o contraseña incorrectos.';
 
-            header('Location: ../../frontend/index.php');
+            header('Location: /');
             exit;
         }
 
@@ -146,7 +146,7 @@ class AuthController
             'Bienvenido a FashionCloud, ' . $usuario['nombre'] . '.';
 
         // Regresar a la página principal
-        header('Location: ../../frontend/index.php');
+        header('Location: /');
         exit;
     }
 
@@ -180,7 +180,7 @@ class AuthController
         session_destroy();
 
         // Regresar a la página principal
-        header('Location: ../../frontend/index.php');
+        header('Location: /');
         exit;
     }
 }
@@ -223,7 +223,7 @@ try {
     } else {
 
         // Acción no reconocida
-        header('Location: ../../frontend/index.php');
+        header('Location: /');
         exit;
     }
 

@@ -3,7 +3,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// 1. Si el usuario inició sesión correctamente:
+// 1. Si el usuario iniciÃ³ sesiÃ³n correctamente:
 if (isset($_SESSION['usuario'])) {
     $nombre = htmlspecialchars($_SESSION['usuario']['nombre'] ?? 'Usuario');
     $correo = htmlspecialchars($_SESSION['usuario']['correo'] ?? '');
@@ -14,7 +14,7 @@ if (isset($_SESSION['usuario'])) {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>FashionCloud — Panel de Usuario</title>
+        <title>FashionCloud â€” Panel de Usuario</title>
         <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
         <style>
             body {
@@ -101,14 +101,14 @@ if (isset($_SESSION['usuario'])) {
     </head>
     <body>
         <div class="user-card">
-            <span class="brand-badge">FashionCloud • Sesión Activa</span>
-            <h1>¡Hola, <?= $nombre ?>!</h1>
+            <span class="brand-badge">FashionCloud â€¢ SesiÃ³n Activa</span>
+            <h1>Â¡Hola, <?= $nombre ?>!</h1>
             <p class="user-email"><?= $correo ?></p>
             <div>Rol asignado: <span class="role-pill"><?= ucfirst($rol) ?></span></div>
             
             <div class="btn-group">
-                <a href="../frontend/index.html" class="btn btn-store">Ir al Catálogo de Ropa</a>
-                <a href="controllers/AuthController.php?action=logout" class="btn btn-logout">Cerrar Sesión</a>
+                <a href="/" class="btn btn-store">Ir al CatÃ¡logo de Ropa</a>
+                <a href="controllers/AuthController.php?action=logout" class="btn btn-logout">Cerrar SesiÃ³n</a>
             </div>
         </div>
     </body>
@@ -117,7 +117,7 @@ if (isset($_SESSION['usuario'])) {
     exit;
 }
 
-// 2. Si hay mensaje flash (error o notificación de registro), lo mostramos y redirigimos:
+// 2. Si hay mensaje flash (error o notificaciÃ³n de registro), lo mostramos y redirigimos:
 if (isset($_SESSION['flash'])) {
     $mensaje = addslashes($_SESSION['flash']);
     unset($_SESSION['flash']);
@@ -131,7 +131,7 @@ if (isset($_SESSION['flash'])) {
     <body>
         <script>
             alert("<?= $mensaje ?>");
-            window.location.href = "../frontend/index.html";
+            window.location.href = "/";
         </script>
     </body>
     </html>
@@ -139,6 +139,7 @@ if (isset($_SESSION['flash'])) {
     exit;
 }
 
-// 3. Si no ha iniciado sesión y no hay flash, redirigimos a la landing page
-header('Location: ../frontend/index.html');
+// 3. Si no ha iniciado sesiÃ³n y no hay flash, redirigimos a la landing page
+header('Location: /');
 exit;
+
