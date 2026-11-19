@@ -70,7 +70,7 @@ CREATE TABLE IF NOT EXISTS `pedidos` (
   `total` DECIMAL(10,2) NOT NULL,
   `direccion` TEXT NOT NULL,
   `estado` ENUM('pendiente', 'confirmado', 'enviado', 'entregado', 'cancelado') NOT NULL DEFAULT 'pendiente',
-  `metodo_pago` ENUM('por_confirmar', 'transferencia', 'efectivo') NOT NULL DEFAULT 'por_confirmar',
+  `metodo_pago` ENUM('por_confirmar', 'transferencia', 'efectivo', 'yape') NOT NULL DEFAULT 'por_confirmar',
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT `fk_pedidos_usuario` FOREIGN KEY (`usuario_id`) 
     REFERENCES `usuarios` (`id`) ON DELETE CASCADE ON UPDATE CASCADE

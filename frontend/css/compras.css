@@ -1,0 +1,13 @@
+* { box-sizing: border-box; }
+body { margin: 0; background: #f4f2f5; color: #252234; font: 16px system-ui, sans-serif; }
+main { max-width: 980px; margin: 2rem auto; padding: 1.5rem; background: #fff; border-radius: 12px; }
+section { padding: 1rem 0; border-top: 1px solid #e8dfe8; }
+h2 { margin-top: 0; }
+label { display: inline-block; margin: 0.4rem 0.75rem 0.4rem 0; }
+input, select, button { font: inherit; padding: 0.5rem; border: 1px solid #b9abb9; border-radius: 6px; }
+input[type="number"] { width: 5rem; }
+button { background: #734768; color: #fff; cursor: pointer; }
+button:disabled { opacity: 0.55; cursor: default; }
+a { color: #734768; }
+th, td { padding: 0.7rem; text-align: left; border-bottom: 1px solid #e8dfe8; }
+.tabla { overflow-x: auto; }
