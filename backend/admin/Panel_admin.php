@@ -4,12 +4,10 @@ require_once __DIR__ . '/../config/app.php';
 
 header('Content-Type: text/html; charset=UTF-8');
 
-// Comprobar que haya iniciado sesión.
 if (!isset($_SESSION['usuario'])) {
     fc_redirect('frontend/auth.php?modo=login');
 }
 
-// Comprobar que sea administrador.
 if (($_SESSION['usuario']['rol'] ?? '') !== 'admin') {
     http_response_code(403);
     exit('Acceso denegado. Esta página es exclusiva para administradores.');
@@ -71,10 +69,19 @@ $csrfToken = fc_csrf_token();
         }
 
         .opcion {
+            display: block;
             padding: 25px;
             background: #f7edf5;
             border-radius: 8px;
             text-align: center;
+            text-decoration: none;
+            color: #333;
+            transition: 0.2s;
+        }
+
+        .opcion:hover {
+            background: #ead5e5;
+            transform: translateY(-3px);
         }
 
         .salir {
@@ -84,7 +91,6 @@ $csrfToken = fc_csrf_token();
             background: #8b5e83;
             color: white;
             border: none;
-            text-decoration: none;
             border-radius: 6px;
             cursor: pointer;
             font-size: 16px;
@@ -113,25 +119,25 @@ $csrfToken = fc_csrf_token();
 
     <div class="opciones">
 
-        <div class="opcion">
+        <a class="opcion" href="Productos_admin.php">
             <h3>Productos</h3>
             <p>Gestión de productos.</p>
-        </div>
+        </a>
 
-        <div class="opcion">
+        <a class="opcion" href="Categorias_admin.php">
             <h3>Categorías</h3>
             <p>Gestión de categorías.</p>
-        </div>
+        </a>
 
-        <div class="opcion">
+        <a class="opcion" href="Pedidos_admin.php">
             <h3>Pedidos</h3>
             <p>Consulta de pedidos.</p>
-        </div>
+        </a>
 
-        <div class="opcion">
+        <a class="opcion" href="Usuarios_admin.php">
             <h3>Usuarios</h3>
             <p>Gestión de usuarios.</p>
-        </div>
+        </a>
 
     </div>
 

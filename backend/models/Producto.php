@@ -1,3 +1,4 @@
+
 <?php
 
 class Producto
@@ -59,6 +60,40 @@ class Producto
             $datos['color'] ?? null,
             $datos['imagen_url'] ?? null,
             $datos['categoria_id'] ?? null
+        ]);
+    }
+
+    // Actualizar todos los datos de un producto
+    public static function actualizar(
+        PDO $pdo,
+        int $id,
+        array $datos
+    ): bool {
+        $sql = "UPDATE productos SET
+                    codigo = ?,
+                    nombre = ?,
+                    descripcion = ?,
+                    precio = ?,
+                    stock = ?,
+                    talla = ?,
+                    color = ?,
+                    imagen_url = ?,
+                    categoria_id = ?
+                WHERE id = ? AND estado = 1";
+
+        $stmt = $pdo->prepare($sql);
+
+        return $stmt->execute([
+            $datos['codigo'],
+            $datos['nombre'],
+            $datos['descripcion'] ?? null,
+            $datos['precio'],
+            $datos['stock'],
+            $datos['talla'] ?? null,
+            $datos['color'] ?? null,
+            $datos['imagen_url'] ?? null,
+            $datos['categoria_id'] ?? null,
+            $id
         ]);
     }
 
