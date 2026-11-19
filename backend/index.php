@@ -1,7 +1,6 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+require_once __DIR__ . '/config/app.php';
+$csrfToken = fc_csrf_token();
 
 // 1. Si el usuario iniciÃ³ sesiÃ³n correctamente:
 if (isset($_SESSION['usuario'])) {
@@ -107,8 +106,11 @@ if (isset($_SESSION['usuario'])) {
             <div>Rol asignado: <span class="role-pill"><?= ucfirst($rol) ?></span></div>
             
             <div class="btn-group">
-                <a href="/" class="btn btn-store">Ir al CatÃ¡logo de Ropa</a>
-                <a href="controllers/AuthController.php?action=logout" class="btn btn-logout">Cerrar SesiÃ³n</a>
+                <a href="../frontend/index.php" class="btn btn-store">Ir al Catálogo de Ropa</a>
+                <form action="routes/authRoutes.php?action=logout" method="POST">
+                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8') ?>">
+                    <button type="submit" class="btn btn-logout" style="width:100%;cursor:pointer;">Cerrar Sesión</button>
+                </form>
             </div>
         </div>
     </body>
@@ -119,7 +121,7 @@ if (isset($_SESSION['usuario'])) {
 
 // 2. Si hay mensaje flash (error o notificaciÃ³n de registro), lo mostramos y redirigimos:
 if (isset($_SESSION['flash'])) {
-    $mensaje = addslashes($_SESSION['flash']);
+    $mensaje = (string)$_SESSION['flash'];
     unset($_SESSION['flash']);
     ?>
     <!DOCTYPE html>
@@ -130,8 +132,8 @@ if (isset($_SESSION['flash'])) {
     </head>
     <body>
         <script>
-            alert("<?= $mensaje ?>");
-            window.location.href = "/";
+            alert(<?= json_encode($mensaje, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) ?>);
+            window.location.href = "../frontend/index.php";
         </script>
     </body>
     </html>
@@ -140,6 +142,6 @@ if (isset($_SESSION['flash'])) {
 }
 
 // 3. Si no ha iniciado sesiÃ³n y no hay flash, redirigimos a la landing page
-header('Location: /');
+header('Location: ../frontend/index.php');
 exit;
 

@@ -1,238 +1,182 @@
 
 <?php
+/**
+ * Controlador de autenticación FashionCloud.
+ * El despacho de rutas está en routes/authRoutes.php.
+ */
 
-// ======================================================
-// FASHIONCLOUD - CONTROLADOR DE AUTENTICACIÓN
-// Registro, inicio y cierre de sesión
-// ======================================================
-
-// Iniciar sesión antes de utilizar $_SESSION
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
-// Cargar el modelo Usuario
-$rutaUsuario = __DIR__ . '/../models/Usuario.php';
-
-if (!file_exists($rutaUsuario)) {
-    http_response_code(500);
-    exit('Error: No se encontró el archivo Usuario.php.');
-}
-
-require_once $rutaUsuario;
-
-// Cargar la configuración de base de datos
-$rutaDatabase = __DIR__ . '/../config/database.php';
-
-if (!file_exists($rutaDatabase)) {
-    http_response_code(500);
-    exit('Error: No se encontró el archivo database.php.');
-}
-
-require_once $rutaDatabase;
-
-
-// ======================================================
-// CLASE PRINCIPAL AUTHCONTROLLER
-// ======================================================
+require_once __DIR__ . '/../models/Usuario.php';
 
 class AuthController
 {
-    // --------------------------------------------------
-    // REGISTRO DE USUARIO
-    // --------------------------------------------------
+    private static function validarCsrf(): void
+    {
+        if (!function_exists('fc_verify_csrf') || !fc_verify_csrf()) {
+            http_response_code(419);
+            exit('La sesión del formulario expiró. Vuelve a intentarlo.');
+        }
+    }
 
+    /**
+     * Registro de nuevos usuarios.
+     */
     public static function registro(PDO $pdo): void
     {
-        $nombre = trim($_POST['nombre'] ?? '');
-        $correo = strtolower(trim($_POST['correo'] ?? ''));
-        $password = $_POST['password'] ?? '';
+        self::validarCsrf();
 
-        // Validar los datos recibidos
+        $nombre = trim((string)($_POST['nombre'] ?? ''));
+        $correo = strtolower(trim((string)($_POST['correo'] ?? '')));
+        $password = (string)($_POST['password'] ?? '');
+
         if (
-            $nombre === '' ||
-            !filter_var($correo, FILTER_VALIDATE_EMAIL) ||
-            strlen($password) < 8
+            $nombre === ''
+            || mb_strlen($nombre, 'UTF-8') > 120
+            || !filter_var($correo, FILTER_VALIDATE_EMAIL)
+            || strlen($correo) > 150
+            || strlen($password) < 8
+            || strlen($password) > 4096
         ) {
-            $_SESSION['flash'] =
-                'Por favor completa todos los datos y utiliza una contraseña de al menos 8 caracteres.';
+            fc_set_flash(
+                'Revisa tus datos. El nombre debe tener hasta 120 caracteres y la contraseña al menos 8.',
+                'error'
+            );
 
-            header('Location: /');
-            exit;
+            fc_redirect('frontend/auth.php?modo=register');
         }
 
-        // Verificar si el correo ya existe
-        $usuarioExistente = Usuario::buscarPorCorreo($pdo, $correo);
+        if (Usuario::buscarPorCorreo($pdo, $correo)) {
+            fc_set_flash(
+                'Ese correo electrónico ya está registrado.',
+                'error'
+            );
 
-        if ($usuarioExistente) {
-            $_SESSION['flash'] =
-                'El correo electrónico ya se encuentra registrado.';
-
-            header('Location: /');
-            exit;
+            fc_redirect('frontend/auth.php?modo=register');
         }
 
-        // Encriptar la contraseña
-        $passwordEncriptado = password_hash(
-            $password,
-            PASSWORD_DEFAULT
-        );
+        $hash = password_hash($password, PASSWORD_DEFAULT);
 
-        // Guardar el nuevo usuario
-        Usuario::crear(
-            $pdo,
-            $nombre,
-            $correo,
-            $passwordEncriptado
-        );
-
-        $_SESSION['flash'] =
-            'Registro exitoso. Ya puedes iniciar sesión con tu cuenta.';
-
-        header('Location: /');
-        exit;
-    }
-
-
-    // --------------------------------------------------
-    // INICIO DE SESIÓN
-    // --------------------------------------------------
-
-    public static function login(PDO $pdo): void
-    {
-        $correo = strtolower(trim($_POST['correo'] ?? ''));
-        $password = $_POST['password'] ?? '';
-
-        // Validar campos
-        if (
-            $correo === '' ||
-            $password === '' ||
-            !filter_var($correo, FILTER_VALIDATE_EMAIL)
-        ) {
-            $_SESSION['flash'] =
-                'Debes ingresar un correo electrónico y una contraseña válidos.';
-
-            header('Location: /');
-            exit;
-        }
-
-        // Buscar usuario por correo
-        $usuario = Usuario::buscarPorCorreo($pdo, $correo);
-
-        // Verificar usuario y contraseña
-        if (
-            !$usuario ||
-            !password_verify($password, $usuario['password'])
-        ) {
-            $_SESSION['flash'] =
-                'Correo electrónico o contraseña incorrectos.';
-
-            header('Location: /');
-            exit;
-        }
-
-        // Regenerar identificador de sesión por seguridad
-        session_regenerate_id(true);
-
-        // Guardar los datos del usuario en la sesión
-        $_SESSION['usuario'] = [
-            'id' => (int) $usuario['id'],
-            'nombre' => $usuario['nombre'],
-            'correo' => $usuario['correo'],
-            'rol' => $usuario['rol'] ?? 'cliente'
-        ];
-
-        $_SESSION['flash'] =
-            'Bienvenido a FashionCloud, ' . $usuario['nombre'] . '.';
-
-        // Regresar a la página principal
-        header('Location: /');
-        exit;
-    }
-
-
-    // --------------------------------------------------
-    // CIERRE DE SESIÓN
-    // --------------------------------------------------
-
-    public static function salir(): void
-    {
-        // Vaciar los datos de sesión
-        $_SESSION = [];
-
-        // Eliminar la cookie de sesión
-        if (ini_get('session.use_cookies')) {
-
-            $parametros = session_get_cookie_params();
-
-            setcookie(
-                session_name(),
-                '',
-                time() - 42000,
-                $parametros['path'],
-                $parametros['domain'],
-                $parametros['secure'],
-                $parametros['httponly']
+        if (!$hash) {
+            throw new RuntimeException(
+                'No fue posible proteger la contraseña.'
             );
         }
 
-        // Destruir la sesión
-        session_destroy();
+        try {
+            Usuario::crear($pdo, $nombre, $correo, $hash);
 
-        // Regresar a la página principal
-        header('Location: /');
-        exit;
-    }
-}
+        } catch (PDOException $e) {
 
+            if ($e->getCode() === '23000') {
+                fc_set_flash(
+                    'Ese correo electrónico ya está registrado.',
+                    'error'
+                );
 
-// ======================================================
-// EJECUCIÓN DEL CONTROLADOR
-// ======================================================
+                fc_redirect('frontend/auth.php?modo=register');
+            }
 
-$accion = $_GET['action'] ?? '';
-
-try {
-
-    // Cerrar sesión
-    if ($accion === 'logout' && $_SERVER['REQUEST_METHOD'] === 'GET') {
-
-        AuthController::salir();
-
-    }
-
-    // Registrar o iniciar sesión
-    elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
-        $pdo = Database::conectar();
-
-        if ($accion === 'register') {
-
-            AuthController::registro($pdo);
-
-        } elseif ($accion === 'login') {
-
-            AuthController::login($pdo);
-
-        } else {
-
-            http_response_code(400);
-            exit('Error: Acción no válida.');
+            throw $e;
         }
 
-    } else {
+        fc_set_flash(
+            'Tu cuenta fue creada correctamente. Ahora puedes iniciar sesión.',
+            'success'
+        );
 
-        // Acción no reconocida
-        header('Location: /');
-        exit;
+        fc_redirect('frontend/auth.php?modo=login');
     }
 
-} catch (PDOException $error) {
+    /**
+     * Inicio de sesión.
+     */
+    public static function login(PDO $pdo): void
+    {
+        self::validarCsrf();
 
-    http_response_code(500);
+        $correo = strtolower(trim((string)($_POST['correo'] ?? '')));
+        $password = (string)($_POST['password'] ?? '');
 
-    exit(
-        'Error en la base de datos: ' .
-        htmlspecialchars($error->getMessage(), ENT_QUOTES, 'UTF-8')
-    );
+        if (
+            !filter_var($correo, FILTER_VALIDATE_EMAIL)
+            || $password === ''
+        ) {
+            fc_set_flash(
+                'Ingresa un correo electrónico y una contraseña válidos.',
+                'error'
+            );
+
+            fc_redirect('frontend/auth.php?modo=login');
+        }
+
+        $usuario = Usuario::buscarPorCorreo($pdo, $correo);
+
+        if (
+            !$usuario
+            || !password_verify($password, $usuario['password'])
+        ) {
+            fc_set_flash(
+                'Correo electrónico o contraseña incorrectos.',
+                'error'
+            );
+
+            fc_redirect('frontend/auth.php?modo=login');
+        }
+
+        // Renovar el identificador de sesión.
+        session_regenerate_id(true);
+
+        $_SESSION['usuario'] = [
+            'id' => (int)$usuario['id'],
+            'nombre' => $usuario['nombre'],
+            'correo' => $usuario['correo'],
+            'rol' => $usuario['rol'] ?? 'cliente',
+        ];
+
+        // Renovar el token CSRF.
+        unset($_SESSION['csrf_token']);
+
+        fc_set_flash(
+            'Bienvenido/a a FashionCloud, ' . $usuario['nombre'] . '.',
+            'success'
+        );
+
+        // Redirección según el rol.
+        if ($_SESSION['usuario']['rol'] === 'admin') {
+            fc_redirect('backend/admin/Panel_admin.php');
+        }
+
+        fc_redirect('frontend/index.php');
+    }
+
+    /**
+     * Cierre de sesión.
+     */
+    public static function salir(): void
+    {
+        self::validarCsrf();
+
+        // Vaciar los datos de sesión.
+        $_SESSION = [];
+
+        // Eliminar la cookie de sesión.
+        if (ini_get('session.use_cookies')) {
+            $params = session_get_cookie_params();
+
+            setcookie(session_name(), '', [
+                'expires' => time() - 42000,
+                'path' => $params['path'],
+                'domain' => $params['domain'],
+                'secure' => $params['secure'],
+                'httponly' => $params['httponly'],
+                'samesite' => $params['samesite'] ?? 'Lax',
+            ]);
+        }
+
+        // Destruir la sesión.
+        session_destroy();
+
+        // Regresar a la tienda.
+        header('Location: ' . fc_url('frontend/index.php'));
+        exit;
+    }
 }

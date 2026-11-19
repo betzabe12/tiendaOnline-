@@ -479,7 +479,7 @@ h1, h2, h3, h4, h5, h6 {
     overflow: hidden;
     aspect-ratio: 3/4;
     cursor: pointer;
-    group: relative;
+    
     box-shadow: var(--shadow-sm);
     transition: all var(--transition-base);
 }

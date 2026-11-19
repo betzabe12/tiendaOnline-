@@ -2,9 +2,11 @@
 // ======================================================
 // FASHIONCLOUD - CONTROL DE SESIÓN
 // ======================================================
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+require_once __DIR__ . '/../backend/config/app.php';
+$csrfToken = fc_csrf_token();
+$flashMessage = $_SESSION['flash'] ?? '';
+$flashType = $_SESSION['flash_type'] ?? 'info';
+unset($_SESSION['flash'], $_SESSION['flash_type']);
 
 $usuario = $_SESSION['usuario'] ?? null;
 
@@ -74,9 +76,19 @@ if (is_array($usuario)) {
             }
         }
     </style>
+    <style>
+        .fc-logout-form { display:inline-flex; margin:0; }
+        .fc-logout-form button { font:inherit; cursor:pointer; }
+        .footer-links .fc-logout-form button { border:0; padding:0; background:transparent; color:inherit; text-align:left; }
+    </style>
 </head>
 
 <body>
+    <?php if ($flashMessage !== ''): ?>
+        <div role="status" aria-live="polite" style="position:relative;z-index:9999;max-width:1100px;margin:12px auto;padding:12px 18px;border-radius:8px;background:<?= $flashType === 'error' ? '#FEE2E2' : '#DCFCE7' ?>;color:<?= $flashType === 'error' ? '#991B1B' : '#166534' ?>;">
+            <?= htmlspecialchars($flashMessage, ENT_QUOTES, 'UTF-8') ?>
+        </div>
+    <?php endif; ?>
 
     <!-- =====================================================
          1. BARRA DE NAVEGACIÓN
@@ -123,10 +135,10 @@ if (is_array($usuario)) {
                             Mi cuenta
                         </a>
 
-                        <a href="../backend/controllers/AuthController.php?action=logout"
-                           class="btn btn-primary btn-sm">
-                            Cerrar sesión
-                        </a>
+                        <form action="../backend/routes/authRoutes.php?action=logout" method="POST" class="fc-logout-form">
+                            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8') ?>">
+                            <button type="submit" class="btn btn-primary btn-sm">Cerrar sesión</button>
+                        </form>
 
                     </div>
 
@@ -639,9 +651,10 @@ if (is_array($usuario)) {
                             </li>
 
                             <li>
-                                <a href="../backend/controllers/AuthController.php?action=logout">
-                                    Cerrar Sesión
-                                </a>
+                                <form action="../backend/routes/authRoutes.php?action=logout" method="POST" class="fc-logout-form">
+                                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8') ?>">
+                                    <button type="submit">Cerrar Sesión</button>
+                                </form>
                             </li>
 
                         <?php else: ?>
@@ -860,8 +873,9 @@ if (is_array($usuario)) {
 
 
             <form id="modalLoginForm"
-                  action="../backend/controllers/AuthController.php?action=login"
+                  action="../backend/routes/authRoutes.php?action=login"
                   method="POST">
+                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8') ?>">
 
                 <div class="auth-form-group">
 
@@ -900,9 +914,10 @@ if (is_array($usuario)) {
 
 
             <form id="modalRegisterForm"
-                  action="../backend/controllers/AuthController.php?action=register"
+                  action="../backend/routes/authRoutes.php?action=register"
                   method="POST"
                   style="display:none;">
+                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8') ?>">
 
                 <div class="auth-form-group">
 

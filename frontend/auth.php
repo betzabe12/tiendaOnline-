@@ -1,11 +1,11 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+require_once __DIR__ . '/../backend/config/app.php';
 
 $usuario = $_SESSION['usuario'] ?? null;
 $flash = $_SESSION['flash'] ?? '';
-unset($_SESSION['flash']);
+$flashType = $_SESSION['flash_type'] ?? 'info';
+unset($_SESSION['flash'], $_SESSION['flash_type']);
+$csrfToken = fc_csrf_token();
 
 $modo = $_GET['modo'] ?? 'login';
 if (!in_array($modo, ['login', 'register'], true)) {
@@ -52,7 +52,10 @@ if (!in_array($modo, ['login', 'register'], true)) {
                     <h1>¡Hola, <?= htmlspecialchars($usuario['nombre'], ENT_QUOTES, 'UTF-8') ?>!</h1>
                     <p class="form-intro">Ya has iniciado sesión en tu cuenta.</p>
                     <a class="submit-button button-link" href="index.php">Ir a la tienda</a>
-                    <a class="text-link logout-link" href="../backend/controllers/AuthController.php?action=logout">Cerrar sesión</a>
+                    <form action="../backend/routes/authRoutes.php?action=logout" method="POST" class="logout-form">
+                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8') ?>">
+                        <button class="text-link logout-link" type="submit">Cerrar sesión</button>
+                    </form>
                 <?php else: ?>
                     <div class="form-emblem" aria-hidden="true">♙</div>
                     <p class="eyebrow">TU ESTILO COMIENZA AQUÍ</p>
@@ -64,7 +67,7 @@ if (!in_array($modo, ['login', 'register'], true)) {
                     </p>
 
                     <?php if ($flash !== ''): ?>
-                        <div class="flash-message" role="alert">
+                        <div class="flash-message" role="alert" data-type="<?= htmlspecialchars($flashType, ENT_QUOTES, 'UTF-8') ?>">
                             <?= htmlspecialchars($flash, ENT_QUOTES, 'UTF-8') ?>
                         </div>
                     <?php endif; ?>
@@ -75,7 +78,8 @@ if (!in_array($modo, ['login', 'register'], true)) {
                     </div>
 
                     <?php if ($modo === 'login'): ?>
-                        <form action="../backend/controllers/AuthController.php?action=login" method="POST">
+                        <form action="../backend/routes/authRoutes.php?action=login" method="POST">
+                            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8') ?>">
                             <label for="correo-login">Correo electrónico</label>
                             <div class="input-wrap">
                                 <span aria-hidden="true">✉</span>
@@ -96,7 +100,8 @@ if (!in_array($modo, ['login', 'register'], true)) {
                         </form>
                         <p class="switch-copy">¿No tienes cuenta? <a href="auth.php?modo=register">Regístrate aquí</a></p>
                     <?php else: ?>
-                        <form action="../backend/controllers/AuthController.php?action=register" method="POST">
+                        <form action="../backend/routes/authRoutes.php?action=register" method="POST">
+                            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8') ?>">
                             <label for="nombre-register">Nombre completo</label>
                             <div class="input-wrap">
                                 <span aria-hidden="true">♙</span>

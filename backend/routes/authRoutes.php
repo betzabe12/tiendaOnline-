@@ -1,33 +1,39 @@
 <?php
-/**
- * FashionCloud — Enrutador de Autenticación
- */
-
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
+/** Punto único de entrada para registro, login y logout. */
+require_once __DIR__ . '/../config/app.php';
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../controllers/AuthController.php';
 
-$pdo = Database::conectar();
-$action = $_GET['action'] ?? '';
+$action = (string)($_GET['action'] ?? '');
+$method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if ($action === 'register') {
-        AuthController::registro($pdo);
-    } elseif ($action === 'login') {
-        AuthController::login($pdo);
-    } else {
-        $_SESSION['flash'] = 'Acción no válida.';
-        header('Location: ../index.php');
-        exit;
+try {
+    if ($method !== 'POST') {
+        http_response_code(405);
+        header('Allow: POST');
+        exit('Método no permitido.');
     }
-} elseif ($_SERVER['REQUEST_METHOD'] === 'GET') {
+
+    if ($action === 'register' || $action === 'login') {
+        $pdo = Database::conectar();
+        if ($action === 'register') {
+            AuthController::registro($pdo);
+        }
+        AuthController::login($pdo);
+    }
+
     if ($action === 'logout') {
         AuthController::salir();
-    } else {
-        header('Location: ../index.php');
-        exit;
     }
+
+    http_response_code(400);
+    exit('Acción no válida.');
+} catch (PDOException $e) {
+    error_log('FashionCloud Auth PDO: ' . $e->getMessage());
+    fc_set_flash('No se pudo completar la operación. Verifica la base de datos e inténtalo nuevamente.', 'error');
+    fc_redirect('frontend/auth.php?modo=' . ($action === 'register' ? 'register' : 'login'));
+} catch (Throwable $e) {
+    error_log('FashionCloud Auth: ' . $e->getMessage());
+    http_response_code(500);
+    exit('Ocurrió un error interno. Inténtalo nuevamente.');
 }

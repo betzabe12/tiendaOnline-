@@ -100,8 +100,8 @@ CREATE TABLE IF NOT EXISTS `detalle_pedidos` (
 -- Administrador: admin@fashioncloud.tienda / admin12345
 -- Cliente: cliente@fashioncloud.tienda / cliente12345
 INSERT INTO `usuarios` (`id`, `nombre`, `correo`, `password`, `rol`) VALUES
-(1, 'Administrador FashionCloud', 'admin@fashioncloud.tienda', '$2y$10$O2dM1G1pG8xYp6lQhM8z7.5T6A8a8iFwz9i1J9u.aO9gC7q4sHk9e', 'admin'),
-(2, 'Cliente de Prueba', 'cliente@fashioncloud.tienda', '$2y$10$Wp7Z3C8iE5bQ9sA1jF2nOe5V2R8t4hY7u1K9o.cM6vB8w5q3e1k7u', 'cliente')
+(1, 'Administrador FashionCloud', 'admin@fashioncloud.tienda', '$2y$12$lU86juLP586nWlKzYV0bT.eoEigns7ADhTA5Ii5w1ox7Qft8/MLJS', 'admin'),
+(2, 'Cliente de Prueba', 'cliente@fashioncloud.tienda', '$2y$12$7G2xA0tSupGW7EGO4zbiMO3RqgAkSH1rgQvdFskS8m2UI0ARmbrPe', 'cliente')
 ON DUPLICATE KEY UPDATE `id` = `id`;
 
 -- Categorías oficiales de ropa:
@@ -124,3 +124,9 @@ INSERT INTO `productos` (`id`, `codigo`, `nombre`, `descripcion`, `precio`, `sto
 (7, 'FC-ACC-007', 'Cinturón Silla de Cuero Genuino', 'Cinturón artesanal de cuero con hebilla metálica en acabado dorado envejecido.', 95.00, 15, 'Ajustable', 'Marrón Suave', 'https://images.unsplash.com/photo-1624222247344-550fb60583dc?auto=format&fit=crop&w=700&q=80', 5, 1),
 (8, 'FC-VES-008', 'Vestido Corto Camisero', 'Vestido estilo camisero con cinturón anudado a la cintura y bolsillos laterales.', 210.00, 7, 'XS, S, M', 'Verde Oliva', 'https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?auto=format&fit=crop&w=700&q=80', 3, 1)
 ON DUPLICATE KEY UPDATE `id` = `id`;
+
+
+-- Reparación de hashes de usuarios demo (solo cuentas de demostración).
+-- Contraseñas: admin12345 y cliente12345. Cambiarlas después de la primera prueba.
+UPDATE usuarios SET password = '$2y$12$lU86juLP586nWlKzYV0bT.eoEigns7ADhTA5Ii5w1ox7Qft8/MLJS' WHERE correo = 'admin@fashioncloud.tienda';
+UPDATE usuarios SET password = '$2y$12$7G2xA0tSupGW7EGO4zbiMO3RqgAkSH1rgQvdFskS8m2UI0ARmbrPe' WHERE correo = 'cliente@fashioncloud.tienda';
