@@ -3,6 +3,18 @@
 // FASHIONCLOUD - CONTROL DE SESIÓN
 // ======================================================
 require_once __DIR__ . '/../backend/config/app.php';
+require_once __DIR__ . '/../backend/config/database.php';
+require_once __DIR__ . '/../backend/models/Producto.php';
+require_once __DIR__ . '/../backend/models/Categoria.php';
+
+$pdo = Database::conectar();
+$categorias = array_column(Categoria::listar($pdo), 'nombre', 'id');
+$productos = Producto::listar($pdo);
+foreach ($productos as &$producto) {
+    $producto['categoria_nombre'] = $categorias[$producto['categoria_id']] ?? 'Sin categoría';
+}
+unset($producto);
+
 $csrfToken = fc_csrf_token();
 $flashMessage = $_SESSION['flash'] ?? '';
 $flashType = $_SESSION['flash_type'] ?? 'info';
@@ -113,6 +125,7 @@ if (is_array($usuario)) {
                 <ul class="nav-links" id="navLinks">
                     <li><a href="#hero" class="nav-link active">Inicio</a></li>
                     <li><a href="#coleccion" class="nav-link">Colección</a></li>
+                    <li><a href="carrito.php" class="nav-link">Carrito</a></li>
                     <li><a href="#categorias" class="nav-link">Categorías</a></li>
                     <li><a href="#beneficios" class="nav-link">Beneficios</a></li>
                     <li><a href="#nosotros" class="nav-link">Nosotros</a></li>
@@ -290,7 +303,7 @@ if (is_array($usuario)) {
                 <div class="categories-grid">
 
                     <div class="category-card"
-                         onclick="filtrarPorCategoria('superiores')">
+                         onclick="filtrarPorCategoria('1')">
 
                         <img
                             src="https://images.unsplash.com/photo-1598554747436-c9293d6a588f?auto=format&fit=crop&w=600&q=80"
@@ -303,7 +316,7 @@ if (is_array($usuario)) {
                     </div>
 
                     <div class="category-card"
-                         onclick="filtrarPorCategoria('pantalones')">
+                         onclick="filtrarPorCategoria('2')">
 
                         <img
                             src="https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?auto=format&fit=crop&w=600&q=80"
@@ -316,7 +329,7 @@ if (is_array($usuario)) {
                     </div>
 
                     <div class="category-card"
-                         onclick="filtrarPorCategoria('vestidos')">
+                         onclick="filtrarPorCategoria('3')">
 
                         <img
                             src="https://images.unsplash.com/photo-1595777457583-95e059d581b8?auto=format&fit=crop&w=600&q=80"
@@ -329,7 +342,7 @@ if (is_array($usuario)) {
                     </div>
 
                     <div class="category-card"
-                         onclick="filtrarPorCategoria('abrigos')">
+                         onclick="filtrarPorCategoria('4')">
 
                         <img
                             src="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&w=600&q=80"
@@ -342,7 +355,7 @@ if (is_array($usuario)) {
                     </div>
 
                     <div class="category-card"
-                         onclick="filtrarPorCategoria('accesorios')">
+                         onclick="filtrarPorCategoria('5')">
 
                         <img
                             src="https://images.unsplash.com/photo-1624222247344-550fb60583dc?auto=format&fit=crop&w=600&q=80"
@@ -391,8 +404,7 @@ if (is_array($usuario)) {
 
                     <span>
                         <strong>Catálogo Activo:</strong>
-                        Las prendas mostradas representan el esquema de la
-                        base de datos (código, nombre, precio, stock, talla y color).
+                        Consulta el precio, la talla y la disponibilidad de cada prenda.
                     </span>
                 </div>
 
@@ -403,30 +415,11 @@ if (is_array($usuario)) {
                         Todas las prendas
                     </button>
 
-                    <button type="button" class="filter-btn"
-                            data-filter="superiores">
-                        Prendas Superiores
-                    </button>
-
-                    <button type="button" class="filter-btn"
-                            data-filter="pantalones">
-                        Pantalones & Jeans
-                    </button>
-
-                    <button type="button" class="filter-btn"
-                            data-filter="vestidos">
-                        Vestidos & Faldas
-                    </button>
-
-                    <button type="button" class="filter-btn"
-                            data-filter="abrigos">
-                        Abrigos
-                    </button>
-
-                    <button type="button" class="filter-btn"
-                            data-filter="accesorios">
-                        Accesorios
-                    </button>
+                    <?php foreach ($categorias as $id => $nombre): ?>
+                        <button type="button" class="filter-btn" data-filter="<?= (int) $id ?>">
+                            <?= htmlspecialchars($nombre, ENT_QUOTES, 'UTF-8') ?>
+                        </button>
+                    <?php endforeach; ?>
 
                 </div>
 
@@ -986,6 +979,10 @@ if (is_array($usuario)) {
          10. JAVASCRIPT
     ====================================================== -->
 
+    <script type="application/json" id="catalogoDatos"><?= json_encode(
+        ['productos' => $productos, 'csrf' => $csrfToken],
+        JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_INVALID_UTF8_SUBSTITUTE
+    ) ?></script>
     <script src="js/landing.js"></script>
 
 </body>

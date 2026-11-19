@@ -3,26 +3,25 @@ class PedidoController {
     public static function crear(PDO $pdo): void {
         if (empty($_SESSION['usuario'])) {
             $_SESSION['flash'] = 'Inicia sesión antes de realizar tu pedido.';
-            header('Location: ../views/login.php');
-            exit;
+            fc_redirect('frontend/auth.php?modo=login');
         }
         $carrito = $_SESSION['carrito'] ?? [];
-        $direccion = trim($_POST['direccion'] ?? '');
+        $direccion = is_string($_POST['direccion'] ?? null) ? trim($_POST['direccion']) : '';
         $metodo = $_POST['metodo_pago'] ?? 'por_confirmar';
-        $metodosPermitidos = ['por_confirmar', 'transferencia', 'efectivo'];
+        $metodosPermitidos = ['por_confirmar', 'transferencia', 'efectivo', 'yape'];
 
-        if (!$carrito || $direccion === '' || !in_array($metodo, $metodosPermitidos, true)) {
+        if (!$carrito || $direccion === '' || strlen($direccion) > 2000 || !in_array($metodo, $metodosPermitidos, true)) {
             $_SESSION['flash'] = 'Revisa el carrito, la dirección y el método de pago.';
-            header('Location: ../views/carrito.php');
-            exit;
+            fc_redirect('frontend/carrito.php');
         }
 
         try {
             $pdo->beginTransaction();
             $productos = [];
-            $total = 0.0;
+            $totalCentavos = 0;
+            ksort($carrito, SORT_NUMERIC);
+            $stmt = $pdo->prepare('SELECT id, nombre, precio, stock FROM productos WHERE id = ? AND estado = 1 FOR UPDATE');
             foreach ($carrito as $id => $cantidad) {
-                $stmt = $pdo->prepare('SELECT id, nombre, precio, stock FROM productos WHERE id = ? AND estado = 1 FOR UPDATE');
                 $stmt->execute([(int)$id]);
                 $p = $stmt->fetch();
                 $cantidad = (int)$cantidad;
@@ -31,12 +30,11 @@ class PedidoController {
                 }
                 $p['cantidad'] = $cantidad;
                 $productos[] = $p;
-                $total += (float)$p['precio'] * $cantidad;
+                $totalCentavos += (int) round((float) $p['precio'] * 100) * $cantidad;
             }
 
-            $stmt = $pdo->prepare("INSERT INTO pedidos (usuario_id,total,direccion,estado,metodo_pago) VALUES (?,?,?,'pendiente',?)");
-            $stmt->execute([$_SESSION['usuario']['id'], $total, $direccion, $metodo]);
-            $pedidoId = (int)$pdo->lastInsertId();
+            $total = $totalCentavos / 100;
+            $pedidoId = Pedido::crear($pdo, (int) $_SESSION['usuario']['id'], $total, $direccion, $metodo);
 
             $detalle = $pdo->prepare('INSERT INTO detalle_pedidos (pedido_id,producto_id,cantidad,precio_unitario) VALUES (?,?,?,?)');
             $actualizar = $pdo->prepare('UPDATE productos SET stock = stock - ? WHERE id = ?');
@@ -49,10 +47,9 @@ class PedidoController {
             $_SESSION['flash'] = "Pedido #$pedidoId registrado. Total: Bs " . number_format($total, 2);
         } catch (Throwable $e) {
             if ($pdo->inTransaction()) $pdo->rollBack();
-            $_SESSION['flash'] = $e instanceof RuntimeException ? $e->getMessage() : 'No se pudo registrar el pedido.';
+            $_SESSION['flash'] = $e instanceof RuntimeException && !($e instanceof PDOException) ? $e->getMessage() : 'No se pudo registrar el pedido.';
         }
-        header('Location: ../views/pedidos.php');
-        exit;
+        fc_redirect('frontend/carrito.php');
     }
 }
 

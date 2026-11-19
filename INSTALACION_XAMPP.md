@@ -18,16 +18,21 @@ Son credenciales de demostración para uso local. Cámbialas antes de publicar e
 ## Si ya habías importado la base de datos
 En phpMyAdmin selecciona la base `fashioncloud`, abre la pestaña SQL y ejecuta el contenido de `backend/database/reparar_usuarios_demo.sql`. Esto corrige los hashes de las dos cuentas de demostración sin volver a crear las tablas.
 
-## Qué se corrigió en esta entrega
-- Se centralizó el inicio de sesión PHP y la generación de tokens CSRF en `backend/config/app.php`.
-- `AuthController.php` ahora contiene solo la lógica de autenticación; el despacho está en `backend/routes/authRoutes.php`.
-- Los formularios de `frontend/auth.php` envían a las rutas y contienen token CSRF.
-- El cierre de sesión ahora usa POST y valida CSRF.
-- Las redirecciones funcionan dentro de la carpeta del proyecto, no dependen de que la web esté instalada en la raíz del dominio.
-- Los mensajes flash se muestran en la página de acceso y en la tienda.
-- Las consultas de listado/búsqueda por ID de usuarios no exponen hashes de contraseñas.
-- Se repararon los hashes de las cuentas demo.
-- `auth.html` redirige a la pantalla oficial `auth.php` para evitar mantener dos sistemas de acceso distintos.
+## Activar Yape y probar la compra
 
-## Alcance de esta entrega
-Esta fase corrige autenticación y rutas relacionadas. Todavía no implementa carrito, API dinámica de catálogo, panel administrativo ni flujo completo de pedidos. Esos módulos se deben abordar en fases posteriores.
+Si la base `fashioncloud` ya existe, abre phpMyAdmin, selecciona la base y
+usa la pestaña **Importar** para cargar `backend/database/agregar_pago_yape.sql`.
+La actualización amplía las opciones de pago y conserva los datos existentes.
+Para una instalación nueva basta con el archivo `fashioncloud.sql`.
+
+1. Abre la tienda y agrega una prenda disponible al carrito.
+2. Inicia sesión como cliente, abre el carrito e indica la dirección de entrega.
+3. Elige **Yape por QR** y confirma el pedido. En **Mis pedidos** aparecerán
+   el QR y el importe exacto del pedido pendiente.
+4. Entra como administrador y abre **Pedidos**. Comprueba los datos del
+   pedido y verifica el ingreso antes de marcarlo como confirmado.
+5. En el panel también puedes gestionar categorías y actualizar el nombre
+   y correo de los clientes desde **Usuarios**.
+
+El QR es estático y el pago se verifica manualmente. Para sustituir el
+QR de cobro, reemplaza `frontend/img/yape-qr.jpeg`.

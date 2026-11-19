@@ -3,121 +3,22 @@
  * Gestión de catálogo representativo, modales interactivos y navegación responsive
  */
 
-// Catálogo de demostración estructurado estrictamente según el modelo Producto.php y la base de datos
-const CATALOGO_FASHIONCLOUD = [
-    {
-        id: 1,
-        codigo: 'FC-TOP-001',
-        nombre: 'Blusa Minimalista de Seda',
-        descripcion: 'Blusa confeccionada en tejido suave con acabado mate y caída fluida. Ideal para looks ejecutivos o casuales.',
-        precio: 185.00,
-        stock: 14,
-        talla: 'S, M, L',
-        color: 'Blanco Perla',
-        imagen_url: 'https://images.unsplash.com/photo-1598554747436-c9293d6a588f?auto=format&fit=crop&w=700&q=80',
-        categoria_id: 1,
-        categoria_slug: 'superiores',
-        categoria_nombre: 'Prendas Superiores'
-    },
-    {
-        id: 2,
-        codigo: 'FC-PAN-002',
-        nombre: 'Pantalón Sastrero Wide Leg',
-        descripcion: 'Pantalón de tiro alto con pinzas frontales y corte recto holgado. Confeccionado en mezcla de viscosa y poliéster.',
-        precio: 220.00,
-        stock: 9,
-        talla: '36, 38, 40, 42',
-        color: 'Negro Carbón',
-        imagen_url: 'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?auto=format&fit=crop&w=700&q=80',
-        categoria_id: 2,
-        categoria_slug: 'pantalones',
-        categoria_nombre: 'Pantalones & Jeans'
-    },
-    {
-        id: 3,
-        codigo: 'FC-VES-003',
-        nombre: 'Vestido Midi Plisado',
-        descripcion: 'Vestido midi con falda plisada y escote cruzado. Tejido liviano con movimiento elegante para eventos y cócteles.',
-        precio: 260.00,
-        stock: 8,
-        talla: 'S, M, L',
-        color: 'Terracota Cálido',
-        imagen_url: 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?auto=format&fit=crop&w=700&q=80',
-        categoria_id: 3,
-        categoria_slug: 'vestidos',
-        categoria_nombre: 'Vestidos & Faldas'
-    },
-    {
-        id: 4,
-        codigo: 'FC-ABR-004',
-        nombre: 'Blazer Estructurado Clásico',
-        descripcion: 'Blazer con solapas en muesca, cierre simple de dos botones y forro interior satinado. Aporta distinción y presencia.',
-        precio: 340.00,
-        stock: 6,
-        talla: 'M, L, XL',
-        color: 'Camel Neutro',
-        imagen_url: 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&w=700&q=80',
-        categoria_id: 4,
-        categoria_slug: 'abrigos',
-        categoria_nombre: 'Abrigos & Chaquetas'
-    },
-    {
-        id: 5,
-        codigo: 'FC-TOP-005',
-        nombre: 'Camisa Oxford Slim Fit',
-        descripcion: 'Camisa 100% algodón hilado en tejido Oxford transpirable. Cuello con botones ocultos y corte limpio contemporáneo.',
-        precio: 165.00,
-        stock: 18,
-        talla: 'S, M, L, XL',
-        color: 'Azul Cielo',
-        imagen_url: 'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?auto=format&fit=crop&w=700&q=80',
-        categoria_id: 1,
-        categoria_slug: 'superiores',
-        categoria_nombre: 'Prendas Superiores'
-    },
-    {
-        id: 6,
-        codigo: 'FC-PAN-006',
-        nombre: 'Jeans Straight Denim Premium',
-        descripcion: 'Pantalón vaquero de corte recto con tiro medio-alto. Denim de 12 oz con ligero confort stretch para el día a día.',
-        precio: 195.00,
-        stock: 12,
-        talla: '38, 40, 42, 44',
-        color: 'Azul Índigo Lavado',
-        imagen_url: 'https://images.unsplash.com/photo-1541099649105-f69ad21f3246?auto=format&fit=crop&w=700&q=80',
-        categoria_id: 2,
-        categoria_slug: 'pantalones',
-        categoria_nombre: 'Pantalones & Jeans'
-    },
-    {
-        id: 7,
-        codigo: 'FC-ACC-007',
-        nombre: 'Cinturón Silla de Cuero Genuino',
-        descripcion: 'Cinturón artesanal de cuero con hebilla metálica en acabado dorado envejecido. Anchura media versátil para trajes y jeans.',
-        precio: 95.00,
-        stock: 15,
-        talla: 'Ajustable (85-105 cm)',
-        color: 'Marrón Suave',
-        imagen_url: 'https://images.unsplash.com/photo-1624222247344-550fb60583dc?auto=format&fit=crop&w=700&q=80',
-        categoria_id: 5,
-        categoria_slug: 'accesorios',
-        categoria_nombre: 'Accesorios'
-    },
-    {
-        id: 8,
-        codigo: 'FC-VES-008',
-        nombre: 'Vestido Corto Camisero',
-        descripcion: 'Vestido estilo camisero con cinturón anudado a la cintura y bolsillos laterales discretos. Fresco, moderno y cómodo.',
-        precio: 210.00,
-        stock: 7,
-        talla: 'XS, S, M',
-        color: 'Verde Oliva',
-        imagen_url: 'https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?auto=format&fit=crop&w=700&q=80',
-        categoria_id: 3,
-        categoria_slug: 'vestidos',
-        categoria_nombre: 'Vestidos & Faldas'
-    }
-];
+const datosCatalogo = JSON.parse(document.getElementById('catalogoDatos').textContent);
+const CATALOGO_FASHIONCLOUD = datosCatalogo.productos.map(producto => ({
+    ...producto,
+    id: Number(producto.id),
+    precio: Number(producto.precio),
+    stock: Number(producto.stock),
+    categoria_slug: String(producto.categoria_id ?? ''),
+    talla: producto.talla || 'Sin especificar',
+    color: producto.color || 'Sin especificar'
+}));
+
+function escaparHTML(valor) {
+    const elemento = document.createElement('span');
+    elemento.textContent = String(valor ?? '');
+    return elemento.innerHTML.replaceAll('"', '&quot;').replaceAll("'", '&#39;');
+}
 
 // Estado global de la aplicación cliente
 let filtroCategoriaActual = 'todos';
@@ -176,28 +77,35 @@ function renderizarProductos(productos) {
     }
 
     grid.innerHTML = productos.map(producto => `
-        <article class="product-card" data-category="${producto.categoria_slug}">
+        <article class="product-card" data-category="${escaparHTML(producto.categoria_slug)}">
             <div class="product-thumb">
-                <span class="product-badge">${producto.categoria_nombre}</span>
-                <img src="${producto.imagen_url}" alt="${producto.nombre}" loading="lazy">
+                <span class="product-badge">${escaparHTML(producto.categoria_nombre)}</span>
+                ${producto.imagen_url ? `<img src="${escaparHTML(producto.imagen_url)}" alt="${escaparHTML(producto.nombre)}" loading="lazy">` : ''}
             </div>
             <div class="product-info">
                 <div class="product-meta-row">
-                    <span class="product-code">${producto.codigo}</span>
+                    <span class="product-code">${escaparHTML(producto.codigo)}</span>
                     <span>Stock: ${producto.stock} uds.</span>
                 </div>
-                <h3 class="product-title">${producto.nombre}</h3>
+                <h3 class="product-title">${escaparHTML(producto.nombre)}</h3>
                 <div class="product-specs">
-                    <span>Talla: <strong>${producto.talla}</strong></span>
-                    <span>Color: <strong>${producto.color}</strong></span>
+                    <span>Talla: <strong>${escaparHTML(producto.talla)}</strong></span>
+                    <span>Color: <strong>${escaparHTML(producto.color)}</strong></span>
                 </div>
                 <div class="product-footer">
                     <div class="product-price">
                         <small>Bs.</small> ${producto.precio.toFixed(2)}
                     </div>
                     <button type="button" class="btn btn-outline btn-sm" onclick="abrirModalProducto(${producto.id})">
-                        Consultar Prenda
+                        Ver detalles
                     </button>
+                    <form method="post" action="carrito.php">
+                        <input type="hidden" name="csrf_token" value="${escaparHTML(datosCatalogo.csrf)}">
+                        <input type="hidden" name="producto_id" value="${producto.id}">
+                        <button class="btn btn-accent btn-sm" name="accion" value="agregar" ${producto.stock > 0 ? '' : 'disabled'}>
+                            ${producto.stock > 0 ? 'Agregar al carrito' : 'Agotado'}
+                        </button>
+                    </form>
                 </div>
             </div>
         </article>
@@ -233,9 +141,7 @@ function inicializarFiltros() {
  */
 function filtrarPorCategoria(slug) {
     const targetBtn = document.querySelector(`.filter-btn[data-filter="${slug}"]`);
-    if (targetBtn) {
-        targetBtn.click();
-    }
+    (targetBtn ?? document.querySelector('.filter-btn[data-filter="todos"]'))?.click();
     const coleccionSec = document.getElementById('coleccion');
     if (coleccionSec) {
         coleccionSec.scrollIntoView({ behavior: 'smooth' });
