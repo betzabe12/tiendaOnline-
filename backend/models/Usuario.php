@@ -11,7 +11,7 @@ class Usuario
     /** Incluye el hash únicamente porque el login necesita verificarlo. Nunca mostrar este resultado directamente. */
     public static function buscarPorCorreo(PDO $pdo, string $correo): ?array
     {
-        $stmt = $pdo->prepare('SELECT id, nombre, correo, password, rol, created_at FROM usuarios WHERE correo = ? LIMIT 1');
+        $stmt = $pdo->prepare('SELECT id, nombre, correo, password, rol FROM usuarios WHERE correo = ? LIMIT 1');
         $stmt->execute([$correo]);
         $usuario = $stmt->fetch();
         return $usuario ?: null;
